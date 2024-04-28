@@ -31,3 +31,7 @@ In this two-day course, you will gain a comprehensive introduction to data visua
 By the end of the course, you'll have gained knowledge and understanding of the general purpose and principles of data visualisation and the fundamental graphical tools for visualising data.  You'll also be able to plot complex, multivariate datasets using a wide variety of fundamental graphical tools, and have the know-how to effectively explore and interrogate datasets visually.
 
 On completion of at least 80% of the course, you'll receive a certificate of attendance.
+
+## Required software
+
+Instructions on how to install the required software is [here](software.md).
