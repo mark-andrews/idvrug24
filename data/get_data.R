@@ -1,5 +1,12 @@
-weight_df <- readr::read_csv("https://raw.githubusercontent.com/mark-andrews/idvrug24/main/data/weight.csv")
-titanic_df <- readr::read_csv("https://raw.githubusercontent.com/mark-andrews/idvrug24/main/data/TitanicSurvival.csv")
-nott_df <- readr::read_csv("https://raw.githubusercontent.com/mark-andrews/idvrug24/main/data/nottingham_temp.csv")
-map_data <- readr::read_csv("https://raw.githubusercontent.com/mark-andrews/idvrug24/main/data/local_authority_map_data.csv")
-eu_ref <- readr::read_csv("https://raw.githubusercontent.com/mark-andrews/idvrug24/main/data/EU-referendum-result-data.csv")
+BASEPATH <- 'https://raw.githubusercontent.com/mark-andrews/idvrug24/main/data/'
+
+remote_read_csv <- function(filename){
+  readr::read_csv(stringr::str_c(BASEPATH, filename, sep = '/'))
+}
+
+data_df <- remote_read_csv("data_df.csv")
+weight_df <- remote_read_csv("weight.csv")
+titanic_df <- remote_read_csv("TitanicSurvival.csv")
+nott_df <- remote_read_csv("nottingham_temp.csv")
+map_data <- remote_read_csv("local_authority_map_data.csv")
+eu_ref <- remote_read_csv("EU-referendum-result-data.csv")
