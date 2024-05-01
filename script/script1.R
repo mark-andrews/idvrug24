@@ -203,11 +203,33 @@ ggplot(ToothGrowth,
                      group = interaction(supp, dose))
 ) + geom_boxplot(outlier.shape = NA, width = 1/3) + 
   geom_jitter(size = 0.5, 
+              position = position_jitterdodge(dodge.width = 1/3, 
+                                              jitter.width = 1/6))
+
+# add jitter plot
+ggplot(ToothGrowth,
+       mapping = aes(x = dose, 
+                     y = len, 
+                     colour = supp, 
+                     group = interaction(supp, dose))
+) + geom_boxplot(outlier.shape = NA, width = 1/3) + 
+  geom_jitter(size = 0.5,
               position = position_jitterdodge(dodge.width = 1/3,
                                               jitter.width = 1/6))
 
+ggplot(ToothGrowth,
+       mapping = aes(x = dose, 
+                     y = len, 
+                     colour = supp, 
+                     group = interaction(supp, dose))
+) + geom_violin(trim = FALSE)
 
-# barplot
+ggplot(weight_df,
+       mapping = aes(x = gender, 
+                     y = height)
+) + geom_violin(trim = FALSE)
+
+# barplots -----------------------------------------------------------------
 
 ggplot(ToothGrowth,
        mapping = aes(x = dose, y = len, fill = supp)
@@ -223,10 +245,245 @@ ToothGrowth_2 <- summarise(group_by(ToothGrowth, dose, supp),
 ggplot(ToothGrowth_2,
        aes(x = dose, y = avg, fill = supp,  ymin = lower, ymax = upper)
 ) + geom_col(position = 'dodge') + 
-  geom_errorbar(width = 0.2, position = position_dodge())
+  geom_errorbar(width = 0.1, position = position_dodge())
 
 # fix it
 ggplot(ToothGrowth_2,
        aes(x = dose, y = avg, fill = supp, ymin = lower, ymax = upper)
-) + geom_col(position = 'dodge2') + 
-  geom_errorbar(position = position_dodge2(width = 0.2,padding = 0.8))
+) + geom_col(position = 'dodge2')# + 
+  geom_errorbar(position = position_dodge2(width = 0.1,padding = 0.9))
+
+# Scatterplots -------------------------------------------------------------
+
+ggplot(weight_df,
+       mapping = aes(x = height, y = weight)
+) + geom_point()
+  
+ggplot(weight_df,
+       mapping = aes(x = height, y = weight)
+) + geom_point(size = 0.5, alpha = 0.6)
+
+ggplot(weight_df,
+       mapping = aes(x = height, y = weight, colour = gender)
+) + geom_point(size = 0.5) + theme_classic()
+
+# add rug plot too
+ggplot(weight_df,
+       mapping = aes(x = height, y = weight, colour = gender)
+) + geom_point(size = 0.5) + theme_classic() +
+  geom_rug(size = 0.1, alpha = 0.5)
+
+# Marginal plots
+
+library(ggExtra)
+
+# default marginal plot using density estimations
+p1 <- ggplot(weight_df,
+             mapping = aes(x = height, y = weight, colour = gender)
+) + geom_point(size = 0.5) + theme_classic() +
+  geom_rug(size = 0.1, alpha = 0.5)
+
+
+ggMarginal(p1)
+
+# marginal plot with histograms for each axis
+p2 <- ggplot(weight_df,
+             mapping = aes(x = height, y = weight, colour = gender)
+) + geom_point(size = 0.5) + theme_classic() +
+  theme(legend.position = 'bottom')
+
+ggMarginal(p2,
+           type = 'histogram',
+           groupColour = TRUE,
+           position = 'identity',
+           bins = 50,
+           alpha = 0.5,
+           groupFill = TRUE)
+
+# contour plot
+
+ggplot(weight_df,
+             mapping = aes(x = height, y = weight, colour = gender)
+) + geom_density2d()
+
+
+# lines/curves of best fit ------------------------------------------------
+
+ggplot(swiss_df, mapping = aes(x = Examination, y = Fertility)) +
+  geom_point() +
+  geom_smooth() # loess smoother
+
+# line of best fit
+ggplot(swiss_df, mapping = aes(x = Examination, y = Fertility)) +
+  geom_point() +
+  geom_smooth(method = 'lm')
+
+# line of best fit, no confidence interval
+ggplot(swiss_df, mapping = aes(x = Examination, y = Fertility)) +
+  geom_point() +
+  geom_smooth(method = 'lm', se = F)
+
+# polynomial regression degree 2, i.e. quadratic
+ggplot(swiss_df, mapping = aes(x = Examination, y = Fertility)) +
+  geom_point() +
+  geom_smooth(method = 'lm', se = F, formula = 'y ~ poly(x, 2)')
+
+# nonlinear regression using generalized additive models (GAMs)
+ggplot(swiss_df, mapping = aes(x = Examination, y = Fertility)) +
+  geom_point() +
+  geom_smooth(method = 'gam')
+
+# with lots of data, nonlinear regression using gam by default
+ggplot(weight_df, mapping = aes(x = height, y = weight)) +  
+  geom_point(size = 0.5, alpha = 0.6) + geom_smooth()
+
+# when we use colour = something, we get multiple curves or lines
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight, colour = gender)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(fullrange = TRUE, se = F) +
+  theme_classic()
+
+# here are multiple lines of best fit; one per group
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight, colour = gender)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(method = 'lm', fullrange = TRUE, se = F) +
+  theme_classic()
+
+# Labels on points --------------------------------------------------------
+
+# labels on points
+ggplot(swiss_df, 
+       mapping = aes(x = Examination, y = Fertility, label = province)) +
+  geom_point() +
+  geom_text()
+
+# using ggrepel tools
+library(ggrepel)
+
+# labels on points
+ggplot(swiss_df, 
+       mapping = aes(x = Examination, y = Fertility, label = province)) +
+  geom_point() +
+  geom_text_repel()
+
+ggplot(swiss_df, 
+       mapping = aes(x = Examination, y = Fertility, label = province)) +
+  geom_point() +
+  geom_text_repel(max.overlaps = 20)
+
+ggplot(swiss_df, 
+       mapping = aes(x = Examination, y = Fertility, label = province)) +
+  geom_point() +
+  geom_label_repel(max.overlaps = 20)
+
+ggplot(swiss_df, 
+       mapping = aes(x = Examination, 
+                     y = Fertility, 
+                     label = province,
+                     colour = is_catholic)) +
+  geom_point() +
+  geom_text_repel(max.overlaps = 20)
+
+# Facet plots -------------------------------------------------------------
+
+
+# facet plots; one subplot per each gender
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(method = 'lm', fullrange = TRUE, se = F) +
+  theme_classic() +
+  facet_wrap(~gender)
+
+# facet plots; two cols of subplots
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(method = 'lm', fullrange = TRUE, se = F) +
+  theme_classic() +
+  facet_wrap(~race, ncol = 2)
+
+# facet plots: a grid of subplots; 
+# each value of gender as rows, each value of race as cols
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(method = 'lm', fullrange = TRUE, se = F) +
+  theme_classic() +
+  facet_grid(gender ~ race)
+
+# facet plots; both axes free to vary to range of values in each subplot
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(method = 'lm', fullrange = TRUE, se = F) +
+  theme_classic() +
+  facet_wrap(~gender, scales = 'free')
+
+# facet plots; free x axis, y axis fixed
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(method = 'lm', fullrange = TRUE, se = F) +
+  theme_classic() +
+  facet_wrap(~gender, scales = 'free_x')
+
+# facet plots; free y axis, x axis fixed
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(method = 'lm', fullrange = TRUE, se = F) +
+  theme_classic() +
+  facet_wrap(~gender, scales = 'free_y')
+
+
+
+# Note 1: Is the line of best fit actually the line of best fit? ----------
+
+# Get lm coefficients for gender = Male and gender = Female
+weight_best_fit <- weight_df %>% 
+  group_by(gender) %>% 
+  nest() %>% 
+  mutate(b = map(data, ~coef(lm(weight ~ height, data = .)))) %>% 
+  unnest_wider(col = b) %>% 
+  ungroup() %>% 
+  select(gender, intercept = `(Intercept)`, slope = height)
+
+# facet plots
+ggplot(weight_df, 
+       mapping = aes(x = height, y = weight)) +  
+  geom_point(size = 0.5, alpha = 0.6) + 
+  geom_smooth(method = 'lm', fullrange = TRUE, se = F) +
+  # use a different data set and geom_abline
+  # to show the lm model fit
+  geom_abline(data = weight_best_fit,
+              aes(slope = slope, 
+                  intercept = intercept, group = gender),
+              colour = 'red'
+  ) + theme_classic() +
+  facet_wrap(~gender)
+
+
+# Note 2: Changing uncertainty intervals ----------------------------------
+
+swiss_df2 <- bind_cols(
+  swiss_df,
+  # 95% confidence interval; change `level` inside `predict`
+  # to get different confidence level
+  predict(lm(Fertility ~ Examination, data = swiss_df), interval = 'conf')
+)
+
+# make your own ribbon
+ggplot(swiss_df2,
+       aes(x = Examination, y = Fertility)
+) + geom_smooth(method = 'lm', se = F) + 
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)
+
+# separate upper and lower interval lines
+ggplot(swiss_df2,
+       aes(x = Examination, y = Fertility)
+) + geom_smooth(method = 'lm', se = F) + 
+  geom_line(aes(y = upr), colour = 'red') + 
+  geom_line(aes(y = lwr), colour = 'red')
