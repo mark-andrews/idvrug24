@@ -1,0 +1,23 @@
+---
+title: "My first document"
+author: "Mark Andrews"
+date: "2nd May, 2024"
+output: word_document
+---
+
+**Hello**! This is *some* sentence. 
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.cap="This my figure. It is great.", fig.width=3, fig.align='center'}
+library(tidyverse)
+
+ggplot(cars, 
+       mapping = aes(x = speed, y = dist)
+      ) + geom_point() + theme_classic()
+
+ggplot(pressure,
+       mapping = aes(x = temperature, y = pressure)
+) + geom_line()
+```
+
+
+
