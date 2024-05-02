@@ -45,6 +45,16 @@ server <- function(input, output){
     ) + geom_line() + theme_classic() +
       labs(x = 'Probability of a success', y = 'likelihood')
   })
+  
+  observeEvent(
+    input$N,{
+      updateSliderInput(inputId = 'm',
+                        max = input$N,
+                        value = ceiling(input$N/2)
+      )
+    }
+  )
+  
 }
 
 shinyApp(ui = ui, server = server)
